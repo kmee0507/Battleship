@@ -1,0 +1,16 @@
+{
+  "name": "battleship",
+  "version": "0.0.0",
+  "description": "popular board game battleship",
+  "main": "index.js",
+  "script":{
+    "start": "node index.js"
+  }
+  "repository": "",
+  "author": "Kevin Mee",
+  "dependencies": {
+    "async": "~0.2.8",
+    "express": "~3.2.4",
+    "socket.io": "~0.9.14"
+  }
+}
