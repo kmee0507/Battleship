@@ -59,60 +59,117 @@ function guess(){
             if(split[0] == "A"){
                 if(gameBoard[parseInt(split[1])] == "[]"){
                     console.log("HIT");
+                    gameBoard[parseInt(split[1])] = "OO";
+                    //board.initializeBoard(gameBoard);
+                }
+                else{
+                    console.log("MISS");
+                    gameBoard[parseInt(split[1])] = "XX";
+                        
                 }
             }
             else if(split[0] == "B"){
                 if(gameBoard[parseInt(split[1]) + 10] == "[]"){
                     console.log("HIT");
                 }
+                else{
+                    console.log("MISS");
+                    gameBoard[parseInt(split[1]) + 10] = "XX";
+                        
+                }
             }
             else if(split[0] == "C"){
                 if(gameBoard[parseInt(split[1]) + 20] == "[]"){
                     console.log("HIT");
+                }
+                else{
+                    console.log("MISS");
+                    gameBoard[parseInt(split[1]) + 20] = "XX";
+                        
                 }
             }
             else if(split[0] == "D"){
                 if(gameBoard[parseInt(split[1]) + 30] == "[]"){
                     console.log("HIT");
                 }
+                else{
+                    console.log("MISS");
+                    gameBoard[parseInt(split[1])+30] = "XX";
+                        
+                }
             }
             else if(split[0] == "E"){
                 if(gameBoard[parseInt(split[1]) + 40] == "[]"){
                     console.log("HIT");
+                }
+                else{
+                    console.log("MISS");
+                    gameBoard[parseInt(split[1])+40] = "XX";
+                        
                 }
             }
             else if(split[0] == "F"){
                 if(gameBoard[parseInt(split[1]) + 50] == "[]"){
                     console.log("HIT");
                 }
+                else{
+                    console.log("MISS");
+                    gameBoard[parseInt(split[1]) + 50] = "XX";
+                        
+                }
             }
             else if(split[0] == "G"){
                 if(gameBoard[parseInt(split[1]) + 60] == "[]"){
                     console.log("HIT");
+                }
+                else{
+                    console.log("MISS");
+                    gameBoard[parseInt(split[1]) + 60] = "XX";
+                        
                 }
             }
             else if(split[0] == "H"){
                 if(gameBoard[parseInt(split[1]) + 70] == "[]"){
                     console.log("HIT");
                 }
+                else{
+                    console.log("MISS");
+                    gameBoard[parseInt(split[1]) + 70] = "XX";
+                        
+                }
             }
             else if(split[0] == "I"){
                 if(gameBoard[parseInt(split[1]) + 80] == "[]"){
                     console.log("HIT");
+                }
+                else{
+                    console.log("MISS");
+                    gameBoard[parseInt(split[1]) + 80] = "XX";
+                        
                 }
             }
             else if(split[0] == "J"){
                 if(gameBoard[parseInt(split[1]) + 90] == "[]"){
                     console.log("HIT");
                 }
+                else{
+                    console.log("MISS");
+                    gameBoard[parseInt(split[1]) + 90] = "XX";
+                        
+                }
             }
-            else{
-                console.log("MISS")
-            }
+            board.initializeBoard(gameBoard);
+            guess();
         })
+        
 }
 function introduction(){
     console.log("\n\n****BATTLESHIP****\n\n");
+    console.log("Legend:");
+    console.log("XX - MISS");
+    console.log("OO - HIT");
+    console.log("[] - occupied space");
+    console.log("\n\n");
     battleShipSpots();
 }
 introduction();
