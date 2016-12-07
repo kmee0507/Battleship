@@ -6,45 +6,65 @@ const board = require('./board.js');
 const pieces = require('./pieces.js');
 require('events').EventEmitter.prototype._maxListeners = 100;
 var gameBoard = board.createBoard();
+var guessedGameBoard = board.createBoard();
 var guessedBoatLocations = [];
 var placedSpotsOnBoard = [];
 var shipCount = 0;
-var previous = 0;
+var previous = 1;
 var previousSpot=[];
 var occupiedSpots = [];
 var currentlyOccupiedSpots = [];
 var gamePieces = pieces.createPieces();
-
-
+var init = 1;
+var boatPiece = 0;
+var string = "";
+var previousIndex = 0;
+var acceptableSpot = false;
 
 function battleShipSpots() {
-
+    if(init == 1){
+        boatPiece = gamePieces.pop();
+        init = 2;
+    }
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
         terminal: false
     });
     
-    rl.question('Enter spot for the 2 ship (A-J 1-10):', (answer) => {
+    rl.question('Enter spots for the ' +string+ boatPiece + ' ship (A-J 1-10):', (answer) => {
         // TODO: Log the answer in a database
-        
+        var index = gameBoard.indexOf(answer.toUpperCase());
+        if(previous == 1){
+            previousIndex = index;
+            previous =2;
+            acceptableSpot = true;
+            
+        }
+        else if(previousIndex % 10 == 0 && index == previousIndex + 1){
+            acceptableSpot = false;
+        }
+        else if(index == (previousIndex + 1) || index == (previousIndex - 1)){
+            previousIndex = index;
+            acceptableSpot = true;
+        }
+        else if(index == (previousIndex + 10) || index == (previousIndex - 10)){
+                
+            previousIndex =index;
+            acceptableSpot = true;
+        }
+        else{
+            
+            acceptableSpot = false;
+        }
         var alreadyPlaced = false;
         for(var c = 0;c<placedSpotsOnBoard.length;c++){
             if(placedSpotsOnBoard[c] == answer){
-                var alreadyPlaced = true;
+                alreadyPlaced = true;
             }
         }
-        if(!alreadyPlaced){
+        if(!alreadyPlaced && acceptableSpot){
             placedSpotsOnBoard.push(answer);
-            // previousSpot.push(answer);
-            // previous+=1;
-            // if(previous>1){
-            //     var shift = previousSpot.splice(0,1);
-            //     var splitUp = shift[0].split("");
-            //     var number = splitUp[1];
-            //     console.log(number);
-                
-            //}
             
         }
         var split = answer.toUpperCase().split("");
@@ -70,11 +90,10 @@ function battleShipSpots() {
             console.log("\nYou already have a piece placed in that location");
             console.log("Enter an unoccupied location\n");
         }
-        // else if (previous > 1 && !(parseInt(split[1]) + 1 == number || parseInt(split[1]) - 1 == number)){
-        //     console.log("Cannot place boat if spot is not next to it");
-            
-            
-        // }
+        else if(!acceptableSpot){
+            console.log("\nNot an acceptable Spot");
+            console.log("Enter a spot next to the previous spot\n");
+        }
         else{
             shipCount += 1;
             currentlyOccupiedSpots.push(answer.toUpperCase());
@@ -90,8 +109,9 @@ function battleShipSpots() {
         if (shipCount == 2) {
             occupiedSpots.push(currentlyOccupiedSpots);
             currentlyOccupiedSpots = [];
+            boatPiece = gamePieces.pop();
             console.log("\nBoard after placing 2 ship:\n\n");
-            previous = 0;
+            previous = 1;
             previousSpot = [];
             board.initializeBoard(gameBoard);
             console.log("\n\n");
@@ -99,6 +119,9 @@ function battleShipSpots() {
         if (shipCount == 5) {
             occupiedSpots.push(currentlyOccupiedSpots);
             currentlyOccupiedSpots = [];
+            boatPiece = gamePieces.pop();
+            previous = 1;
+            string = "other "
             console.log("\nBoard after placing first 3 ship:\n\n")
             board.initializeBoard(gameBoard);
             console.log("\n\n");
@@ -108,15 +131,20 @@ function battleShipSpots() {
 
             console.log("\nBoard after placing second 3 ship:\n\n")
             board.initializeBoard(gameBoard);
+            previous = 1;
+            string = "";
             console.log("\n\n");
             currentlyOccupiedSpots = [];
+            boatPiece = gamePieces.pop();
         }
         if (shipCount == 12) {
             occupiedSpots.push(currentlyOccupiedSpots);
             console.log("\nBoard after placing 4 ship:\n\n")
             board.initializeBoard(gameBoard);
+            previous = 1;
             console.log("\n\n");
             currentlyOccupiedSpots = [];
+            boatPiece = gamePieces.pop();
         }
         if (shipCount == 17) {
             occupiedSpots.push(currentlyOccupiedSpots);
@@ -129,8 +157,13 @@ function battleShipSpots() {
         if (shipCount == 17) {
             answer = "exit";
         }
-        if (answer == 'exit') //we need some base case, for recursion
+        if (answer == 'exit'){ //we need some base case, for recursion
+            console.log("\n**BOARD HAS BEEN SET. TIME TO GUESS**\n")
+            board.initializeBoard(guessedGameBoard);
+            console.log("\n\tGUESS BOARD\n******************************\n\tYOUR  BOARD   \n");
+            board.initializeBoard(gameBoard);
             return rl.close();
+        }
 
         
         battleShipSpots();
@@ -138,7 +171,7 @@ function battleShipSpots() {
 
     rl.on('close', () => {
         console.log("");
-        board.initializeBoard(gameBoard);
+        //board.initializeBoard(gameBoard);
         guess();
 
     });
@@ -146,6 +179,7 @@ function battleShipSpots() {
 }
 
 function guess() {
+    
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
@@ -156,7 +190,7 @@ function guess() {
         var guessedAlready = false;
         for(var x = 0;x<guessedBoatLocations.length;x++){
             if(guessedBoatLocations[x] == guessedLocation){
-                console.log("ALREADY TAKEN!");
+                console.log("\nALREADY TAKEN!");
                 guessedAlready = true;
                 break;
             }
@@ -180,6 +214,13 @@ function guess() {
             console.log("NOT A SPOT");
 
         }
+        else if((split[1] != "1" && split[1] != "2" && split[1] != "3" && split[1] != "4" && 
+        split[1] != "5" && split[1] != "6" && split[1] != "7" && split[1] != "8" && 
+        split[1] != "9" && split[1] != "10") || split[2] != undefined){
+            console.log("\nNOT A SPOT");
+            console.log("Enter a valid guess location for a ship\n");
+        }
+        
         var indexOfArray = 0;
         for (var x = 0; x < occupiedSpots.length; x++) {
             for (var y = 0; y < occupiedSpots[x].length; y++) {
@@ -201,12 +242,12 @@ function guess() {
                     occupiedSpots.splice(indexOfArray, 1);
                     console.log("SUNK!!!")
                 }
-                gameBoard[parseInt(split[1])] = colors.red("XX");
+                guessedGameBoard[parseInt(split[1])] = colors.red("XX");
 
             }
             else {
-                console.log("MISS");
-                gameBoard[parseInt(split[1])] = colors.blue("XX");
+                console.log("\nMISS");
+                guessedGameBoard[parseInt(split[1])] = colors.blue("XX");
 
             }
         }
@@ -220,11 +261,11 @@ function guess() {
                     occupiedSpots.splice(indexOfArray, 1);
                     console.log("SUNK!!!")
                 }
-                gameBoard[parseInt(split[1]) + 10] = colors.red("XX");
+                guessedGameBoard[parseInt(split[1]) + 10] = colors.red("XX");
             }
             else {
-                console.log("MISS");
-                gameBoard[parseInt(split[1]) + 10] = colors.blue("XX");
+                console.log("\nMISS");
+                guessedGameBoard[parseInt(split[1]) + 10] = colors.blue("XX");
 
             }
         }
@@ -238,11 +279,11 @@ function guess() {
                     occupiedSpots.splice(indexOfArray, 1);
                     console.log("SUNK!!!")
                 }
-                gameBoard[parseInt(split[1]) + 20] = colors.red("XX");
+                guessedGameBoard[parseInt(split[1]) + 20] = colors.red("XX");
             }
             else {
-                console.log("MISS");
-                gameBoard[parseInt(split[1]) + 20] = colors.blue("XX");
+                console.log("\nMISS");
+                guessedGameBoard[parseInt(split[1]) + 20] = colors.blue("XX");
 
             }
         }
@@ -256,11 +297,11 @@ function guess() {
                     occupiedSpots.splice(indexOfArray, 1);
                     console.log("SUNK!!!")
                 }
-                gameBoard[parseInt(split[1]) + 30] = colors.red("XX");
+                guessedGameBoard[parseInt(split[1]) + 30] = colors.red("XX");
             }
             else {
-                console.log("MISS");
-                gameBoard[parseInt(split[1]) + 30] = colors.blue("XX");
+                console.log("\nMISS");
+                guessedGameBoard[parseInt(split[1]) + 30] = colors.blue("XX");
 
             }
         }
@@ -274,11 +315,11 @@ function guess() {
                     occupiedSpots.splice(indexOfArray, 1);
                     console.log("SUNK!!!")
                 }
-                gameBoard[parseInt(split[1]) + 40] = colors.red("XX");
+                guessedGameBoard[parseInt(split[1]) + 40] = colors.red("XX");
             }
             else {
-                console.log("MISS");
-                gameBoard[parseInt(split[1]) + 40] = colors.blue("XX");
+                console.log("\nMISS");
+                guessedGameBoard[parseInt(split[1]) + 40] = colors.blue("XX");
 
             }
         }
@@ -292,11 +333,11 @@ function guess() {
                     occupiedSpots.splice(indexOfArray, 1);
                     console.log("SUNK!!!")
                 }
-                gameBoard[parseInt(split[1]) + 50] = colors.red("XX");
+                guessedGameBoard[parseInt(split[1]) + 50] = colors.red("XX");
             }
             else {
-                console.log("MISS");
-                gameBoard[parseInt(split[1]) + 50] = colors.blue("XX");
+                console.log("\nMISS");
+                guessedGameBoard[parseInt(split[1]) + 50] = colors.blue("XX");
 
             }
         }
@@ -310,11 +351,11 @@ function guess() {
                     occupiedSpots.splice(indexOfArray, 1);
                     console.log("SUNK!!!")
                 }
-                gameBoard[parseInt(split[1]) + 60] = colors.red("XX");
+                guessedGameBoard[parseInt(split[1]) + 60] = colors.red("XX");
             }
             else {
-                console.log("MISS");
-                gameBoard[parseInt(split[1]) + 60] = colors.blue("XX");
+                console.log("\nMISS");
+                guessedGameBoard[parseInt(split[1]) + 60] = colors.blue("XX");
 
             }
         }
@@ -328,11 +369,11 @@ function guess() {
                     occupiedSpots.splice(indexOfArray, 1);
                     console.log("SUNK!!!")
                 }
-                gameBoard[parseInt(split[1]) + 70] = colors.red("XX");
+                guessedGameBoard[parseInt(split[1]) + 70] = colors.red("XX");
             }
             else {
-                console.log("MISS");
-                gameBoard[parseInt(split[1]) + 70] = colors.blue("XX");
+                console.log("\nMISS");
+                guessedGameBoard[parseInt(split[1]) + 70] = colors.blue("XX");
 
             }
         }
@@ -346,11 +387,11 @@ function guess() {
                     occupiedSpots.splice(indexOfArray, 1);
                     console.log("SUNK!!!")
                 }
-                gameBoard[parseInt(split[1]) + 80] = colors.red("XX");
+                guessedGameBoard[parseInt(split[1]) + 80] = colors.red("XX");
             }
             else {
-                console.log("MISS");
-                gameBoard[parseInt(split[1]) + 80] = colors.blue("XX");
+                console.log("\nMISS");
+                guessedGameBoard[parseInt(split[1]) + 80] = colors.blue("XX");
 
             }
         }
@@ -364,17 +405,15 @@ function guess() {
                     occupiedSpots.splice(indexOfArray, 1);
                     console.log("SUNK!!!")
                 }
-                gameBoard[parseInt(split[1]) + 90] = colors.red("XX");
+                guessedGameBoard[parseInt(split[1]) + 90] = colors.red("XX");
             }
             else {
-                console.log("MISS");
-                gameBoard[parseInt(split[1]) + 90] = colors.blue("XX");
+                console.log("\nMISS");
+                guessedGameBoard[parseInt(split[1]) + 90] = colors.blue("XX");
 
             }
         }
-        console.log(occupiedSpots[0]);
-        console.log(occupiedSpots[1]);
-        console.log(occupiedSpots[2]);
+        
         if (occupiedSpots.length == 0) {
             console.log("\n");
             board.initializeBoard(gameBoard);
@@ -382,6 +421,8 @@ function guess() {
             process.exit()
         }
         console.log("\n");
+        board.initializeBoard(guessedGameBoard);
+        console.log("\n\tGUESS BOARD\n******************************\n\tYOUR  BOARD   \n");
         board.initializeBoard(gameBoard);
         guess();
     })
