@@ -1,8 +1,9 @@
 // app/index.js
-const prompt = require('/home/ubuntu/.nvm/versions/node/v4.6.1/lib/node_modules/prompt');
+
 const colors = require('/home/ubuntu//.nvm/versions/node/v4.6.1/lib/node_modules/colors');
 const readline = require('readline');
 const board = require('./board.js');
+const sleep = require('/home/ubuntu/.nvm/versions/node/v4.6.1/lib/node_modules/sleep');
 const pieces = require('./pieces.js');
 require('events').EventEmitter.prototype._maxListeners = 100;
 var gameBoard = board.createBoard();
@@ -11,7 +12,6 @@ var guessedBoatLocations = [];
 var placedSpotsOnBoard = [];
 var shipCount = 0;
 var previous = 1;
-var previousSpot=[];
 var occupiedSpots = [];
 var currentlyOccupiedSpots = [];
 var gamePieces = pieces.createPieces();
@@ -112,7 +112,6 @@ function battleShipSpots() {
             boatPiece = gamePieces.pop();
             console.log("\nBoard after placing 2 ship:\n\n");
             previous = 1;
-            previousSpot = [];
             board.initializeBoard(gameBoard);
             console.log("\n\n");
         }
@@ -121,8 +120,8 @@ function battleShipSpots() {
             currentlyOccupiedSpots = [];
             boatPiece = gamePieces.pop();
             previous = 1;
-            string = "other "
-            console.log("\nBoard after placing first 3 ship:\n\n")
+            string = "other ";
+            console.log("\nBoard after placing first 3 ship:\n\n");
             board.initializeBoard(gameBoard);
             console.log("\n\n");
         }
@@ -148,7 +147,7 @@ function battleShipSpots() {
         }
         if (shipCount == 17) {
             occupiedSpots.push(currentlyOccupiedSpots);
-            console.log("\nBoard after placing 5 ship:\n\n")
+            console.log("\nBoard after placing 5 ship:\n\n");
             board.initializeBoard(gameBoard);
             console.log("\n\n");
             currentlyOccupiedSpots = [];
@@ -158,7 +157,7 @@ function battleShipSpots() {
             answer = "exit";
         }
         if (answer == 'exit'){ //we need some base case, for recursion
-            console.log("\n**BOARD HAS BEEN SET. TIME TO GUESS**\n")
+            console.log("\n**BOARD HAS BEEN SET. TIME TO GUESS**\n");
             board.initializeBoard(guessedGameBoard);
             console.log("\n\tGUESS BOARD\n******************************\n\tYOUR  BOARD   \n");
             board.initializeBoard(gameBoard);
@@ -207,6 +206,7 @@ function guess() {
         
         if(split[2] == "0"){
             split[1] = "10";
+            split[2] = undefined;
         }
         
         if (split[0] != "A" && split[0] != "B" && split[0] != "C" && split[0] != "D" && split[0] != "E" &&
@@ -240,7 +240,7 @@ function guess() {
                 occupiedSpots[indexOfArray].splice(index, 1);
                 if (occupiedSpots[indexOfArray].length == 0) {
                     occupiedSpots.splice(indexOfArray, 1);
-                    console.log("SUNK!!!")
+                    console.log("SUNK!!!");
                 }
                 guessedGameBoard[parseInt(split[1])] = colors.red("XX");
 
@@ -254,12 +254,12 @@ function guess() {
         else if (split[0] == "B") {
             if (gameBoard[parseInt(split[1]) + 10] == "[]") {
                 console.log("HIT");
-                var index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
+                index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
 
                 occupiedSpots[indexOfArray].splice(index, 1);
                 if (occupiedSpots[indexOfArray].length == 0) {
                     occupiedSpots.splice(indexOfArray, 1);
-                    console.log("SUNK!!!")
+                    console.log("SUNK!!!");
                 }
                 guessedGameBoard[parseInt(split[1]) + 10] = colors.red("XX");
             }
@@ -272,7 +272,7 @@ function guess() {
         else if (split[0] == "C") {
             if (gameBoard[parseInt(split[1]) + 20] == "[]") {
                 console.log("HIT");
-                var index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
+                index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
 
                 occupiedSpots[indexOfArray].splice(index, 1);
                 if (occupiedSpots[indexOfArray] == 0) {
@@ -290,12 +290,12 @@ function guess() {
         else if (split[0] == "D") {
             if (gameBoard[parseInt(split[1]) + 30] == "[]") {
                 console.log("HIT");
-                var index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
+                index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
                 
                 occupiedSpots[indexOfArray].splice(index, 1);
                 if (occupiedSpots[indexOfArray].length == 0) {
                     occupiedSpots.splice(indexOfArray, 1);
-                    console.log("SUNK!!!")
+                    console.log("SUNK!!!");
                 }
                 guessedGameBoard[parseInt(split[1]) + 30] = colors.red("XX");
             }
@@ -308,12 +308,12 @@ function guess() {
         else if (split[0] == "E") {
             if (gameBoard[parseInt(split[1]) + 40] == "[]") {
                 console.log("HIT");
-                var index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
+                index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
 
                 occupiedSpots[indexOfArray].splice(index, 1);
                 if (occupiedSpots[indexOfArray].length == 0) {
                     occupiedSpots.splice(indexOfArray, 1);
-                    console.log("SUNK!!!")
+                    console.log("SUNK!!!");
                 }
                 guessedGameBoard[parseInt(split[1]) + 40] = colors.red("XX");
             }
@@ -326,12 +326,12 @@ function guess() {
         else if (split[0] == "F") {
             if (gameBoard[parseInt(split[1]) + 50] == "[]") {
                 console.log("HIT");
-                var index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
+                index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
 
                 occupiedSpots[indexOfArray].splice(index, 1);
                 if (occupiedSpots[indexOfArray].length == 0) {
                     occupiedSpots.splice(indexOfArray, 1);
-                    console.log("SUNK!!!")
+                    console.log("SUNK!!!");
                 }
                 guessedGameBoard[parseInt(split[1]) + 50] = colors.red("XX");
             }
@@ -344,12 +344,12 @@ function guess() {
         else if (split[0] == "G") {
             if (gameBoard[parseInt(split[1]) + 60] == "[]") {
                 console.log("HIT");
-                var index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
+                index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
 
                 occupiedSpots[indexOfArray].splice(index, 1);
                 if (occupiedSpots[indexOfArray] == 0) {
                     occupiedSpots.splice(indexOfArray, 1);
-                    console.log("SUNK!!!")
+                    console.log("SUNK!!!");
                 }
                 guessedGameBoard[parseInt(split[1]) + 60] = colors.red("XX");
             }
@@ -362,12 +362,12 @@ function guess() {
         else if (split[0] == "H") {
             if (gameBoard[parseInt(split[1]) + 70] == "[]") {
                 console.log("HIT");
-                var index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
+                index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
 
                 occupiedSpots[indexOfArray].splice(index, 1);
                 if (occupiedSpots[indexOfArray].length == 0) {
                     occupiedSpots.splice(indexOfArray, 1);
-                    console.log("SUNK!!!")
+                    console.log("SUNK!!!");
                 }
                 guessedGameBoard[parseInt(split[1]) + 70] = colors.red("XX");
             }
@@ -380,12 +380,12 @@ function guess() {
         else if (split[0] == "I") {
             if (gameBoard[parseInt(split[1]) + 80] == "[]") {
                 console.log("HIT");
-                var index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
+                index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
 
                 occupiedSpots[indexOfArray].splice(index, 1);
                 if (occupiedSpots[indexOfArray].length == 0) {
                     occupiedSpots.splice(indexOfArray, 1);
-                    console.log("SUNK!!!")
+                    console.log("SUNK!!!");
                 }
                 guessedGameBoard[parseInt(split[1]) + 80] = colors.red("XX");
             }
@@ -398,12 +398,12 @@ function guess() {
         else if (split[0] == "J") {
             if (gameBoard[parseInt(split[1]) + 90] == "[]") {
                 console.log("HIT");
-                var index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
+                index = occupiedSpots[indexOfArray].indexOf(guessedLocation.toUpperCase());
 
                 occupiedSpots[indexOfArray].splice(index, 1);
                 if (occupiedSpots[indexOfArray].length == 0) {
                     occupiedSpots.splice(indexOfArray, 1);
-                    console.log("SUNK!!!")
+                    console.log("SUNK!!!");
                 }
                 guessedGameBoard[parseInt(split[1]) + 90] = colors.red("XX");
             }
@@ -418,15 +418,22 @@ function guess() {
             console.log("\n");
             board.initializeBoard(gameBoard);
             console.log("\n\nGAME OVER YOU WIN!!!!!!");
-            process.exit()
+            process.exit();
         }
         console.log("\n");
         board.initializeBoard(guessedGameBoard);
         console.log("\n\tGUESS BOARD\n******************************\n\tYOUR  BOARD   \n");
         board.initializeBoard(gameBoard);
         guess();
-    })
+    });
 
+}
+
+function rules(){
+    console.log("Rules for Battleship:");
+    sleep.sleep(10);
+    console.log("\nGame Time!\n");
+    battleShipSpots();
 }
 
 function introduction() {
@@ -451,13 +458,13 @@ function introduction() {
             battleShipSpots();
         }
         else if(choice == 2){
-            
+            rules();
         }
         else if(choice == 3){
             process.exit();
         }
         else
-            rl.close()
+            rl.close();
     });
     
     rl.on('close', () => {
